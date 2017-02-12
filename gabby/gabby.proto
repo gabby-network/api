@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package gabby;
+
+service Server {
+  rpc Bye() returns () {}
+  rpc Auth(AuthRequest) returns (AuthResponse) {}
+}
+
+message AuthRequest {
+  string id = 1;
+  string secret = 2;
+}
+
+message AuthResponse {
+  enum Status {
+    UNKNOWN = 0;      // this response is probably invalid
+    SUCCESS = 1;      // success!
+    BADAUTH = 2;      // failed to authenticate due to incorrect credentials provided
+    REDIRECTION = 3;  // redirecting the client to a different server
+    RETRYSOON = 4;    // temporarily failed; try again after the specified delay interval
+    SERVERQUIT = 5;   // the server is quitting (temporarily or not) and no redirection was given; it'll be up to the client to figure out what to do with this status
+  }
+  Status status = 1;
+  string redirect_to = 31;
+  int32 retry_delay = 41;
+}
